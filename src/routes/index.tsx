@@ -2,7 +2,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, SIZES, URGENCY_LEVELS, emojiSet, type ReactResponse, type Size } from '../emoji'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  component: Home,
+  // The document is identical for everyone until they type, so let Cloudflare's
+  // edge serve it. Short TTL: a deploy replaces the hashed assets immediately.
+  headers: () => ({
+    'cache-control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=60',
+  }),
+})
 
 type Status = 'idle' | 'loading' | 'ok' | 'error'
 const DEBOUNCE_MS = 220
