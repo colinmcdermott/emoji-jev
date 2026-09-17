@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { EMOJIS, EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, type ReactResponse } from '../emoji'
+import { EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, SIZES, URGENCY_LEVELS, emojiSet, type ReactResponse, type Size } from '../emoji'
 
 export const Route = createFileRoute('/')({ component: Home })
 
@@ -9,6 +9,7 @@ const DEBOUNCE_MS = 220
 
 function Home() {
   const [text, setText] = useState('')
+  const [size, setSize] = useState<Size>('full')
   const [result, setResult] = useState<ReactResponse | null>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -18,7 +19,7 @@ function Home() {
   const lastWarm = useRef(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const run = useCallback(async (value: string) => {
+  const run = useCallback(async (value: string, sz: Size) => {
     const id = ++seq.current
     if (!value.trim()) {
       setResult(null)
@@ -31,7 +32,7 @@ function Home() {
       const res = await fetch('/api/react', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text: value }),
+        body: JSON.stringify({ text: value, size: sz }),
       })
       const body = (await res.json()) as ReactResponse & { error?: string }
       if (id !== seq.current) return
@@ -50,9 +51,9 @@ function Home() {
   }, [])
 
   useEffect(() => {
-    const t = setTimeout(() => run(text), DEBOUNCE_MS)
+    const t = setTimeout(() => run(text, size), DEBOUNCE_MS)
     return () => clearTimeout(t)
-  }, [text, run])
+  }, [text, size, run])
 
   // Keep the Worker's connection to TypeSafe open so a keystroke doesn't pay a handshake.
   const warm = useCallback(() => {
@@ -79,6 +80,7 @@ function Home() {
     [probs],
   )
   const winner = result ? EMOJI_BY_KEY[result.emoji.choice] : null
+  const keys = useMemo(() => emojiSet(size), [size])
   const maxP = top[0]?.p ?? 1
   const medianMs = useMemo(() => {
     if (!session.ms.length) return null
@@ -137,9 +139,9 @@ function Home() {
           value={clientMs != null && result ? `${Math.round(clientMs)} ms` : '—'}
           hint="keystroke to answer, including the network hops to Oregon and back"
         />
-        <Stat label="Input tokens" value={result ? result.usage.inputTokens.toLocaleString() : '—'} hint={`your text plus the ${EMOJIS.length} options and their descriptions; output tokens are free`} />
+        <Stat label="Input tokens" value={result ? result.usage.inputTokens.toLocaleString() : '—'} hint={`your text plus the ${keys.length} options and their descriptions; output tokens are free`} />
         <Stat label="Cost" value={result ? `$${result.costUsd.toFixed(5)}` : '—'} hint="this call, at $0.042 per million" />
-        <Stat label="Options" value={EMOJIS.length.toLocaleString()} hint="emojis chosen between, plus mood and sarcasm" />
+        <Stat label="Options" value={keys.length.toLocaleString()} hint="emojis chosen between in one Choice question, plus four side questions" />
         <Stat
           label="Session"
           value={medianMs != null ? `${Math.round(medianMs)} ms` : '—'}
@@ -174,7 +176,7 @@ function Home() {
           )}
         </div>
 
-        <div className="stack">
+        <div className="gauges">
           <div className="panel">
             <div className="rowhead">
               <span>MOOD</span>
@@ -190,6 +192,19 @@ function Home() {
           </div>
           <div className="panel">
             <div className="rowhead">
+              <span>URGENCY</span>
+              <span>{result ? URGENCY_LEVELS[Math.round(result.urgency.score)] : '—'}</span>
+            </div>
+            <div className="mood urgency">
+              <i style={{ left: `${result ? (result.urgency.score / (URGENCY_LEVELS.length - 1)) * 100 : 0}%` }} />
+            </div>
+            <div className="moodlabels">
+              <span>{URGENCY_LEVELS[0]}</span>
+              <span>{URGENCY_LEVELS[URGENCY_LEVELS.length - 1]}</span>
+            </div>
+          </div>
+          <div className="panel">
+            <div className="rowhead">
               <span>SARCASM</span>
               <span>{result ? result.sarcasm.toFixed(2) : '—'}</span>
             </div>
@@ -197,15 +212,31 @@ function Home() {
               <i style={{ width: `${result ? result.sarcasm * 100 : 0}%` }} />
             </span>
           </div>
+          <div className="panel">
+            <div className="rowhead">
+              <span>JOKE</span>
+              <span>{result ? result.joke.toFixed(2) : '—'}</span>
+            </div>
+            <span className="bar amber" style={{ display: 'block', height: '0.75rem' }}>
+              <i style={{ width: `${result ? result.joke * 100 : 0}%` }} />
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="panel" style={{ marginTop: '1.25rem' }}>
         <div className="rowhead">
-          <span>ALL {EMOJIS.length} OPTIONS · PROBABILITY LIGHTS EACH KEY</span>
+          <span>{keys.length} OPTIONS · PROBABILITY LIGHTS EACH KEY</span>
+          <span className="seg" role="group" aria-label="Emoji set size">
+            {(Object.keys(SIZES) as Size[]).map((sz) => (
+              <button key={sz} className={sz === size ? 'on' : undefined} onClick={() => setSize(sz)} aria-pressed={sz === size}>
+                {SIZES[sz]}
+              </button>
+            ))}
+          </span>
         </div>
         <div className="keys">
-          {EMOJIS.map((e) => {
+          {keys.map((e) => {
             const p = probs[e.key] ?? 0
             const style = result
               ? ({ '--p': 0.85 * p, '--o': 0.22 + 0.78 * Math.sqrt(p), '--s': 1 + 0.35 * Math.sqrt(p) } as React.CSSProperties)

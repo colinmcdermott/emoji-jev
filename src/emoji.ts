@@ -269,22 +269,59 @@ export const EMOJIS: Emoji[] = raw
 export const EMOJI_BY_KEY = Object.fromEntries(EMOJIS.map((e) => [e.key, e]));
 
 export const MOOD_LEVELS = ['devastated', 'down', 'neutral', 'upbeat', 'ecstatic'] as const;
+export const URGENCY_LEVELS = ['no rush', 'soon', 'right now'] as const;
 
-export function buildQuestions() {
+// The most common emojis, used for the smallest set. The medium set adds the
+// next most useful ones in list order; the full set is everything.
+const CORE_KEYS = [
+  'grinning', 'joy_tears', 'rofl', 'smiling_eyes', 'heart_eyes', 'star_struck', 'kiss', 'yum', 'tongue_wink', 'hugging',
+  'thinking', 'raised_eyebrow', 'neutral', 'smirk', 'unamused', 'eye_roll', 'grimace', 'relieved', 'pensive', 'sleeping',
+  'mask', 'exploding_head', 'partying', 'sunglasses', 'nerd', 'confused', 'worried', 'flushed', 'pleading', 'fearful',
+  'anxious_sweat', 'crying', 'loudly_crying', 'screaming', 'disappointed', 'weary', 'tired_face', 'yawning', 'angry', 'rage',
+  'cursing', 'smiling_imp', 'skull', 'clown', 'sweat_smile', 'upside_down', 'smiling_tear', 'melting', 'holding_back_tears', 'heart',
+  'broken_heart', 'fire', 'sparkles', 'hundred', 'eyes', 'thumbs_up', 'clap', 'raised_hands', 'pray', 'facepalm',
+  'shrug', 'muscle', 'party_popper', 'rocket',
+];
+
+export const SIZES = { small: 64, medium: 128, full: EMOJIS.length } as const;
+export type Size = keyof typeof SIZES;
+
+export function emojiSet(size: Size): Emoji[] {
+  if (size === 'full') return EMOJIS;
+  const core = new Set(CORE_KEYS);
+  const picked = EMOJIS.filter((e) => core.has(e.key));
+  if (size === 'small') return picked;
+  for (const e of EMOJIS) {
+    if (picked.length >= SIZES.medium) break;
+    if (!core.has(e.key)) picked.push(e);
+  }
+  return picked;
+}
+
+export function buildQuestions(size: Size = 'full') {
   return {
     emoji: {
       type: 'choice' as const,
       instructions: 'Pick the single emoji a person would most naturally add to this message.',
-      criteria: Object.fromEntries(EMOJIS.map((e) => [e.key, `${e.char} ${e.desc}`])),
+      criteria: Object.fromEntries(emojiSet(size).map((e) => [e.key, `${e.char} ${e.desc}`])),
     },
     mood: {
       type: 'score' as const,
       instructions: 'How does the writer feel?',
       criteria: [...MOOD_LEVELS],
     },
+    urgency: {
+      type: 'score' as const,
+      instructions: 'How urgently does the writer need something to happen?',
+      criteria: [...URGENCY_LEVELS],
+    },
     sarcasm: {
       type: 'boolean' as const,
       instructions: 'Is the writer being sarcastic or ironic?',
+    },
+    joke: {
+      type: 'boolean' as const,
+      instructions: 'Is the writer trying to be funny?',
     },
   };
 }
@@ -294,7 +331,9 @@ export type ReactResponse = {
   modelId?: string;
   emoji: { choice: string; probabilities: Record<string, number>; confidence?: number };
   mood: { score: number; probabilities: Record<string, number> };
+  urgency: { score: number; probabilities: Record<string, number> };
   sarcasm: number;
+  joke: number;
   options: number;
   usage: { inputTokens: number; outputTokens: number };
   costUsd: number;

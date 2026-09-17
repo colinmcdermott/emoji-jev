@@ -1,8 +1,8 @@
 import { experimental_evaluate as evaluate } from 'ai'
 import { createTypeSafeAi } from '@ai-sdk/typesafe-ai'
-import { EMOJIS, buildQuestions, type ReactResponse } from './emoji'
+import { SIZES, buildQuestions, type ReactResponse, type Size } from './emoji'
 
-const QUESTIONS = buildQuestions()
+const QUESTIONS = { small: buildQuestions('small'), medium: buildQuestions('medium'), full: buildQuestions('full') }
 const USD_PER_INPUT_TOKEN = 0.042 / 1_000_000
 
 export async function apiKey(): Promise<string> {
@@ -18,10 +18,10 @@ export async function apiKey(): Promise<string> {
   return key
 }
 
-export async function react(text: string, signal?: AbortSignal): Promise<ReactResponse> {
+export async function react(text: string, size: Size = 'full', signal?: AbortSignal): Promise<ReactResponse> {
   const model = createTypeSafeAi({ apiKey: await apiKey() }).evaluationModel('jev-latest')
   const started = performance.now()
-  const r = await evaluate({ model, state: { message: text.slice(0, 2000) }, questions: QUESTIONS, abortSignal: signal })
+  const r = await evaluate({ model, state: { message: text.slice(0, 2000) }, questions: QUESTIONS[size], abortSignal: signal })
   const serverMs = performance.now() - started
   const inputTokens = r.usage?.inputTokens ?? 0
   // TypeSafe reports its own processing time; the rest of serverMs is network between this Worker and their API.
@@ -37,8 +37,10 @@ export async function react(text: string, signal?: AbortSignal): Promise<ReactRe
       confidence,
     },
     mood: { score: r.answers.mood.score, probabilities: r.answers.mood.probabilities ?? {} },
+    urgency: { score: r.answers.urgency.score, probabilities: r.answers.urgency.probabilities ?? {} },
     sarcasm: r.answers.sarcasm.probability,
-    options: EMOJIS.length,
+    joke: r.answers.joke.probability,
+    options: SIZES[size],
     usage: { inputTokens, outputTokens: r.usage?.outputTokens ?? 0 },
     costUsd: inputTokens * USD_PER_INPUT_TOKEN,
     timing: { serverMs, modelMs },
