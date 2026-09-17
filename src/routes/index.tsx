@@ -355,7 +355,7 @@ function Slider({ label, levels, score, cls }: { label: string; levels: readonly
         <span>{has ? levels[Math.round(score)] : '—'}</span>
       </div>
       <div className={cls}>
-        <i style={{ left: `${has ? (score / (levels.length - 1)) * 100 : 0}%`, opacity: has ? 1 : 0.4 }} />
+        {has && <i style={{ left: `${(score / (levels.length - 1)) * 100}%` }} />}
       </div>
       <div className="moodlabels">
         <span>{levels[0]}</span>
