@@ -5,7 +5,7 @@ import { EMOJIS, buildQuestions, type ReactResponse } from './emoji'
 const QUESTIONS = buildQuestions()
 const USD_PER_INPUT_TOKEN = 0.042 / 1_000_000
 
-async function apiKey(): Promise<string> {
+export async function apiKey(): Promise<string> {
   // Whop injects app secrets as Worker env bindings. Prefer the binding, fall back to process.env.
   let key: string | undefined
   try {

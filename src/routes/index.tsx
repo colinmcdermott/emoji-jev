@@ -15,6 +15,7 @@ function Home() {
   const [session, setSession] = useState({ calls: 0, cost: 0, ms: [] as number[] })
   const [clientMs, setClientMs] = useState<number | null>(null)
   const seq = useRef(0)
+  const lastWarm = useRef(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const run = useCallback(async (value: string) => {
@@ -53,9 +54,20 @@ function Home() {
     return () => clearTimeout(t)
   }, [text, run])
 
+  // Keep the Worker's connection to TypeSafe open so a keystroke doesn't pay a handshake.
+  const warm = useCallback(() => {
+    const now = Date.now()
+    if (now - lastWarm.current < 20_000) return
+    lastWarm.current = now
+    fetch('/api/warm').catch(() => {})
+  }, [])
+
   useEffect(() => {
     inputRef.current?.focus()
-  }, [])
+    warm()
+    const t = setInterval(warm, 25_000)
+    return () => clearInterval(t)
+  }, [warm])
 
   const probs = useMemo(() => result?.emoji.probabilities ?? {}, [result])
   const top = useMemo(
@@ -84,6 +96,7 @@ function Home() {
           ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onFocus={warm}
           placeholder="type anything…"
           autoComplete="off"
           spellCheck={false}
@@ -116,7 +129,7 @@ function Home() {
       <div className="stats" aria-live="polite">
         <Stat label="Jev time" value={result ? `${Math.round(result.timing.serverMs)} ms` : '—'} hint="model call, measured on the server" />
         <Stat label="Round trip" value={clientMs != null && result ? `${Math.round(clientMs)} ms` : '—'} hint="from your keystroke to the answer" />
-        <Stat label="Input tokens" value={result ? result.usage.inputTokens.toLocaleString() : '—'} hint="output tokens are free" />
+        <Stat label="Input tokens" value={result ? result.usage.inputTokens.toLocaleString() : '—'} hint={`your text plus the ${EMOJIS.length} options and their descriptions; output tokens are free`} />
         <Stat label="Cost" value={result ? `$${result.costUsd.toFixed(5)}` : '—'} hint="this call, at $0.042 per million" />
         <Stat label="Options" value={EMOJIS.length.toLocaleString()} hint="emojis chosen between, plus mood and sarcasm" />
         <Stat

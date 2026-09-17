@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiReactRouteImport } from './routes/api/react'
+import { Route as ApiWarmRouteImport } from './routes/api/warm'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const ApiReactRoute = ApiReactRouteImport.update({
   path: '/api/react',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWarmRoute = ApiWarmRouteImport.update({
+  id: '/api/warm',
+  path: '/api/warm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/react': typeof ApiReactRoute
+  '/api/warm': typeof ApiWarmRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/react': typeof ApiReactRoute
+  '/api/warm': typeof ApiWarmRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/react': typeof ApiReactRoute
+  '/api/warm': typeof ApiWarmRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/react'
+  fullPaths: '/' | '/api/react' | '/api/warm'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/react'
-  id: '__root__' | '/' | '/api/react'
+  to: '/' | '/api/react' | '/api/warm'
+  id: '__root__' | '/' | '/api/react' | '/api/warm'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiReactRoute: typeof ApiReactRoute
+  ApiWarmRoute: typeof ApiWarmRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/warm': {
+      id: '/api/warm'
+      path: '/api/warm'
+      fullPath: '/api/warm'
+      preLoaderRoute: typeof ApiWarmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiReactRoute: ApiReactRoute,
+  ApiWarmRoute: ApiWarmRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
