@@ -1,12 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { apiKey } from '../../jev'
+import { SECURITY_HEADERS, guard } from '../../guard'
 
 // Opens the HTTPS connection to TypeSafe from this Worker so the next
 // evaluation reuses it instead of paying a fresh TCP + TLS handshake.
 export const Route = createFileRoute('/api/warm')({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const blocked = guard(request)
+        if (blocked) return blocked
         try {
           const res = await fetch('https://api.typesafe.ai/v1/models', {
             headers: { authorization: `Bearer ${await apiKey()}` },
@@ -15,7 +18,7 @@ export const Route = createFileRoute('/api/warm')({
         } catch {
           // warm-up is best effort
         }
-        return new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } })
+        return new Response(null, { status: 204, headers: { 'cache-control': 'no-store', ...SECURITY_HEADERS } })
       },
     },
   },

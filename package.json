@@ -39,6 +39,9 @@
       "lightningcss",
       "sharp",
       "workerd"
-    ]
+    ],
+    "overrides": {
+      "yaml": ">=2.8.3"
+    }
   }
 }

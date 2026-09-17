@@ -39,12 +39,10 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 
 .brandrow { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 .brand { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; }
-.brand::before { content: ''; width: 0.3rem; height: 0.9rem; border-radius: 2px; background: rgb(var(--accent)); }
 .brandsub { color: var(--muted); font-size: 0.85rem; }
 .pills { margin-left: auto; display: flex; gap: 0.4rem; }
 .pill { font-family: ui-monospace, monospace; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); }
 .pill.accent { background: var(--pill); border-color: transparent; color: var(--pill-ink); }
-h1 { font-size: 1.4rem; margin: 1rem 0 0; letter-spacing: -0.015em; font-weight: 600; }
 
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 0.9rem; padding: 1rem; }
 .inputrow { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }

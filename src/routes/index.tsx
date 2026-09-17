@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { SECURITY_HEADERS } from '../guard'
 import { EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, PROMPTS_SHOWN, SIZES, URGENCY_LEVELS, emojiSet, pickPrompts, type ReactResponse, type Size } from '../emoji'
 
 export const Route = createFileRoute('/')({
@@ -8,6 +9,7 @@ export const Route = createFileRoute('/')({
   // edge serve it. Short TTL: a deploy replaces the hashed assets immediately.
   headers: () => ({
     'cache-control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=60',
+    ...SECURITY_HEADERS,
   }),
 })
 
@@ -101,14 +103,13 @@ function Home() {
   return (
     <main>
       <div className="brandrow">
-        <span className="brand">Emoji Jev</span>
-        <span className="brandsub">TypeSafe AI Jev on Whop</span>
+        <span className="brand">⌨️ Emoji Jev</span>
+        <span className="brandsub">Emoji autocomplete at the speed of typing.</span>
         <span className="pills">
           <span className="pill">{keys.length} emojis</span>
           <span className="pill accent">{result?.modelId ?? 'jev-latest'}</span>
         </span>
       </div>
-      <h1>Emoji autocomplete at the speed of typing.</h1>
 
       <div className="panel inputrow">
         <input
