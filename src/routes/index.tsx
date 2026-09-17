@@ -205,10 +205,10 @@ function Home() {
       </div>
       <footer className="foot">
         <p>
-          Decisions by <a href="https://typesafe.ai" rel="noopener">Jev</a>, TypeSafe AI&apos;s System One model, via the{' '}
-          <a href="https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai" rel="noopener">AI SDK</a>. Built and deployed with the{' '}
-          <a href="https://whop.com/developers/" rel="noopener">Whop CLI</a>.{' '}
-          <a href="https://github.com/colinmcdermott/emoji-jev" rel="noopener">View the code</a>.
+          Decisions by <a href="https://typesafe.ai" target="_blank" rel="noopener noreferrer">Jev</a> via the{' '}
+          <a href="https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai" target="_blank" rel="noopener noreferrer">AI SDK</a>. Built and deployed with the{' '}
+          <a href="https://docs.whop.com/cli/overview" target="_blank" rel="noopener noreferrer">Whop CLI</a>.{' '}
+          <a href="https://github.com/colinmcdermott/emoji-jev" target="_blank" rel="noopener noreferrer">View the code</a>.
         </p>
         <p>
           Clone it: <code>whop apps init --template app_D0f07WnZVO8v5N --app_type website</code>
