@@ -1,5 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
+import iconUrl from '../icon.png?url'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -11,8 +12,8 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
-      { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icon.png' },
-      { rel: 'apple-touch-icon', href: '/icon.png' },
+      { rel: 'icon', type: 'image/png', sizes: '192x192', href: iconUrl },
+      { rel: 'apple-touch-icon', href: iconUrl },
     ],
   }),
   shellComponent: RootDocument,
