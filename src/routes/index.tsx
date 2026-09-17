@@ -40,13 +40,22 @@ function Home() {
     setStatus('loading')
     const t0 = performance.now()
     try {
-      const res = await fetch('/api/react', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text: value, size: sz }),
-      })
-      const body = (await res.json()) as ReactResponse & { error?: string }
-      if (id !== seq.current) return
+      // One quiet retry for transient upstream trouble (503/429) before showing an error.
+      let res: Response | undefined
+      let body: (ReactResponse & { error?: string }) | undefined
+      for (let attempt = 0; attempt < 2; attempt++) {
+        res = await fetch('/api/react', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ text: value, size: sz }),
+        })
+        body = (await res.json()) as ReactResponse & { error?: string }
+        if (id !== seq.current) return
+        if (res.ok || (res.status !== 503 && res.status !== 429) || attempt === 1) break
+        await new Promise((r) => setTimeout(r, 1500))
+        if (id !== seq.current) return
+      }
+      if (!res || !body) return
       if (!res.ok) throw new Error(body.error ?? `HTTP ${res.status}`)
       const r = body
       setClientMs(performance.now() - t0)

@@ -18,10 +18,17 @@ export const Route = createFileRoute('/api/react')({
         try {
           return json(await react(body.text, size, request.signal))
         } catch (err) {
-          const e = err as { message?: string; statusCode?: number }
-          if (e.statusCode === 429) return json({ error: 'Rate limited by TypeSafe. Try again in a moment.' }, 429)
-          if (e.statusCode === 401) return json({ error: 'The TypeSafe API key was rejected.' }, 502)
-          console.error('evaluate failed', e.statusCode, e.message)
+          // The AI SDK wraps repeated failures in a RetryError; the useful status lives on the last attempt.
+          const raw = err as { message?: string; statusCode?: number; lastError?: unknown; responseBody?: string }
+          const last = (raw.lastError ?? raw) as { message?: string; statusCode?: number; responseBody?: string }
+          const status = last.statusCode
+          const text = `${last.responseBody ?? ''} ${last.message ?? ''}`
+          console.error('evaluate failed', status, text.slice(0, 300))
+          if (status === 429) return json({ error: 'Jev is rate limiting right now. Try again in a moment.' }, 429, { 'retry-after': '3' })
+          if (status === 401 || status === 403) return json({ error: 'The API key was rejected upstream.' }, 502)
+          if (status === 529 || /model_unavailable|overloaded/i.test(text)) {
+            return json({ error: 'Jev is briefly unavailable upstream. Retrying…' }, 503, { 'retry-after': '2' })
+          }
           return json({ error: 'Evaluation failed. Try again.' }, 502)
         }
       },
