@@ -22,8 +22,21 @@ export function json(body: unknown, status = 200, extra: Record<string, string> 
   })
 }
 
+async function limiter() {
+  try {
+    return (await import('cloudflare:workers')).env.RATE_LIMITER ?? null
+  } catch {
+    return null
+  }
+}
+
+/** Which limiter is active; exposed for diagnostics. */
+export async function limiterKind(): Promise<'binding' | 'memory'> {
+  return (await limiter()) ? 'binding' : 'memory'
+}
+
 /** Returns a Response to send immediately, or null if the request may proceed. */
-export function guard(request: Request): Response | null {
+export async function guard(request: Request): Promise<Response | null> {
   const url = new URL(request.url)
 
   // Browsers mark fetches from the page itself; block cross-site and most scripted callers.
@@ -36,6 +49,15 @@ export function guard(request: Request): Response | null {
   if (length > MAX_BODY_BYTES) return json({ error: 'Request body too large.' }, 413)
 
   const ip = request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for') ?? 'unknown'
+
+  // Preferred: Cloudflare's rate-limit binding, shared across isolates in a location.
+  const rl = await limiter()
+  if (rl) {
+    const { success } = await rl.limit({ key: ip })
+    return success ? null : json({ error: 'Slow down a little.' }, 429, { 'retry-after': '10' })
+  }
+
+  // Fallback: per-isolate memory bucket.
   const now = Date.now()
   const b = buckets.get(ip)
   if (!b || b.reset < now) {

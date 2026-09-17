@@ -284,7 +284,7 @@ function Home() {
           <a href="https://github.com/colinmcdermott/emoji-jev" target="_blank" rel="noopener noreferrer">View the code</a>.
         </p>
         <p>
-          Clone it: <code>whop apps init --template app_D0f07WnZVO8v5N --app_type website</code>
+          <CloneButton />
         </p>
       </footer>
     </main>
@@ -297,5 +297,25 @@ function Stat({ label, value, hint }: { label: string; value: string; hint: stri
       <span className="v">{value}</span>
       <span className="l">{label}</span>
     </div>
+  )
+}
+
+const CLONE_CMD = 'whop apps init --template app_D0f07WnZVO8v5N --app_type website'
+
+function CloneButton() {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(CLONE_CMD)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.prompt('Copy this command:', CLONE_CMD)
+    }
+  }
+  return (
+    <button className="clone" onClick={copy} title={CLONE_CMD} aria-label="Copy the Whop CLI command to clone this app">
+      {copied ? '✓ command copied' : '⧉ clone with the Whop CLI'}
+    </button>
   )
 }

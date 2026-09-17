@@ -8,7 +8,7 @@ export const Route = createFileRoute('/api/react')({
     handlers: {
       GET: () => methodNotAllowed('POST'),
       POST: async ({ request }) => {
-        const blocked = guard(request)
+        const blocked = await guard(request)
         if (blocked) return blocked
         const body = (await request.json().catch(() => ({}))) as { text?: unknown; size?: unknown }
         const size: Size = typeof body.size === 'string' && Object.hasOwn(SIZES, body.size) ? (body.size as Size) : 'full'

@@ -96,4 +96,6 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 .foot { margin-top: 1.5rem; font-size: 0.78rem; color: var(--muted); }
 .foot p { margin: 0.25rem 0; }
 .foot a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.clone { background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 0.3rem 0.8rem; font: inherit; font-size: 0.75rem; cursor: pointer; }
+.clone:hover { border-color: var(--muted); }
 .foot code { font-family: ui-monospace, monospace; font-size: 0.72rem; background: var(--panel); border: 1px solid var(--line); border-radius: 0.35rem; padding: 0.1rem 0.4rem; user-select: all; }
