@@ -22,14 +22,6 @@ export function json(body: unknown, status = 200, extra: Record<string, string> 
   })
 }
 
-async function limiter() {
-  try {
-    return (await import('cloudflare:workers')).env.RATE_LIMITER ?? null
-  } catch {
-    return null
-  }
-}
-
 /** Returns a Response to send immediately, or null if the request may proceed. */
 export async function guard(request: Request): Promise<Response | null> {
   const url = new URL(request.url)
@@ -45,14 +37,7 @@ export async function guard(request: Request): Promise<Response | null> {
 
   const ip = request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for') ?? 'unknown'
 
-  // Preferred: Cloudflare's rate-limit binding, shared across isolates in a location.
-  const rl = await limiter()
-  if (rl) {
-    const { success } = await rl.limit({ key: ip })
-    return success ? null : json({ error: 'Slow down a little.' }, 429, { 'retry-after': '10' })
-  }
-
-  // Fallback: per-isolate memory bucket.
+  // Per-isolate memory bucket: a speed bump, not a hard quota.
   const now = Date.now()
   const b = buckets.get(ip)
   if (!b || b.reset < now) {

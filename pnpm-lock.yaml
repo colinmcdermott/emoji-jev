@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/gateway':
+        specifier: ^4.0.85
+        version: 4.0.85(zod@4.6.5)
       '@ai-sdk/typesafe-ai':
         specifier: ^3.0.2
         version: 3.0.2(zod@4.6.5)

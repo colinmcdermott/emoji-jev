@@ -286,7 +286,10 @@ const SETUP_PROMPT = `Set up my own copy of the Emoji Jev app (https://emoji-jev
 1. If the \`whop\` CLI is not installed, install it: npm install -g @whop/cli (or: curl -fsSL https://whop.com/install.sh | sh).
 2. Run \`whop login\`, then pick or create a business when prompted.
 3. Clone the published app: whop apps init --template app_D0f07WnZVO8v5N --app_type website
-4. Get a TypeSafe AI API key from https://console.typesafe.ai/settings/keys and store it: whop apps secrets set --secret TYPESAFE_AI_API_KEY=<key>. Also write TYPESAFE_AI_API_KEY=<key> to a .dev.vars file in the project for local dev.
+4. Give the app a key for Jev, either way works:
+   a) Vercel AI Gateway (any Vercel account): create an API key under AI Gateway in the Vercel dashboard, then run: whop apps secrets set --secret AI_GATEWAY_API_KEY=<key>
+   b) TypeSafe AI directly (if you have console access): get a key from https://console.typesafe.ai/settings/keys, then run: whop apps secrets set --secret TYPESAFE_AI_API_KEY=<key>
+   For local dev, also write the same NAME=<key> line to a .dev.vars file in the project.
 5. Run \`whop apps dev\` to try it locally, then \`whop apps deploy\` to put it live on <route>.whop.site.`
 
 function CloneButton() {

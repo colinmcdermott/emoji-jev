@@ -24,8 +24,10 @@ npm install -g @whop/cli                                             # or: curl 
 whop login
 whop apps init --template app_D0f07WnZVO8v5N --app_type website   # clone the published source
 cd emoji-jev
-whop apps secrets set --secret TYPESAFE_AI_API_KEY=...             # key from https://console.typesafe.ai/settings/keys
-echo "TYPESAFE_AI_API_KEY=..." > .dev.vars                          # same key for local dev (gitignored)
+# one of the two, whichever you have access to:
+whop apps secrets set --secret AI_GATEWAY_API_KEY=...              # Vercel dashboard -> AI Gateway -> API keys
+whop apps secrets set --secret TYPESAFE_AI_API_KEY=...             # https://console.typesafe.ai/settings/keys
+echo "AI_GATEWAY_API_KEY=..." > .dev.vars                           # same key for local dev (gitignored)
 whop apps dev
 whop apps deploy
 ```
@@ -35,6 +37,6 @@ Or from this repo: `pnpm install`, add `.dev.vars`, `pnpm dev`.
 ## Files
 
 - `src/emoji.ts` the emoji vocabulary and the three questions
-- `src/jev.ts` the Jev call, reads the key from the Worker env binding
+- `src/jev.ts` the Jev call; uses TypeSafe directly if `TYPESAFE_AI_API_KEY` is set, else Vercel AI Gateway via `AI_GATEWAY_API_KEY`
 - `src/routes/api/react.ts` `POST /api/react`
 - `src/routes/index.tsx` the page

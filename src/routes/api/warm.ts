@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { apiKey } from '../../jev'
+import { resolveModel } from '../../jev'
 import { SECURITY_HEADERS, guard } from '../../guard'
 
 // Opens the HTTPS connection to TypeSafe from this Worker so the next
@@ -11,9 +11,11 @@ export const Route = createFileRoute('/api/warm')({
         const blocked = await guard(request)
         if (blocked) return blocked
         try {
-          const res = await fetch('https://api.typesafe.ai/v1/models', {
-            headers: { authorization: `Bearer ${await apiKey()}` },
-          })
+          const { via, key } = await resolveModel()
+          const res =
+            via === 'typesafe'
+              ? await fetch('https://api.typesafe.ai/v1/models', { headers: { authorization: `Bearer ${key}` } })
+              : await fetch('https://ai-gateway.vercel.sh/v1/credits', { headers: { authorization: `Bearer ${key}` } })
           await res.arrayBuffer()
         } catch {
           // warm-up is best effort
