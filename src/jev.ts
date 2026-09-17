@@ -1,6 +1,6 @@
 import { experimental_evaluate as evaluate } from 'ai'
 import { createTypeSafeAi } from '@ai-sdk/typesafe-ai'
-import { SIZES, buildQuestions, type ReactResponse, type Size } from './emoji'
+import { SIZES, buildQuestions, type Emotion, type ReactResponse, type Size } from './emoji'
 
 const QUESTIONS = { small: buildQuestions('small'), medium: buildQuestions('medium'), full: buildQuestions('full') }
 const USD_PER_INPUT_TOKEN = 0.042 / 1_000_000
@@ -38,8 +38,14 @@ export async function react(text: string, size: Size = 'full', signal?: AbortSig
     },
     mood: { score: r.answers.mood.score, probabilities: r.answers.mood.probabilities ?? {} },
     urgency: { score: r.answers.urgency.score, probabilities: r.answers.urgency.probabilities ?? {} },
+    energy: { score: r.answers.energy.score, probabilities: r.answers.energy.probabilities ?? {} },
+    emotion: {
+      choice: r.answers.emotion.choice as Emotion,
+      probabilities: r.answers.emotion.probabilities ?? { [r.answers.emotion.choice]: 1 },
+    },
     sarcasm: r.answers.sarcasm.probability,
     joke: r.answers.joke.probability,
+    wantsReply: r.answers.wantsReply.probability,
     options: SIZES[size],
     usage: { inputTokens, outputTokens: r.usage?.outputTokens ?? 0 },
     costUsd: inputTokens * USD_PER_INPUT_TOKEN,

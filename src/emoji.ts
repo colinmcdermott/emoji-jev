@@ -270,6 +270,18 @@ export const EMOJI_BY_KEY = Object.fromEntries(EMOJIS.map((e) => [e.key, e]));
 
 export const MOOD_LEVELS = ['devastated', 'down', 'neutral', 'upbeat', 'ecstatic'] as const;
 export const URGENCY_LEVELS = ['no rush', 'soon', 'right now'] as const;
+export const ENERGY_LEVELS = ['flat', 'steady', 'buzzing'] as const;
+export const EMOTIONS = {
+  joy: 'happiness, delight, celebration',
+  love: 'affection, warmth, gratitude',
+  surprise: 'shock, amazement, did not expect that',
+  sadness: 'grief, disappointment, loss',
+  anger: 'frustration, irritation, outrage',
+  fear: 'worry, anxiety, dread',
+  disgust: 'revulsion, contempt, gross',
+  neutral: 'no strong emotion, matter of fact',
+} as const;
+export type Emotion = keyof typeof EMOTIONS;
 
 // The most common emojis, used for the smallest set. The medium set adds the
 // next most useful ones in list order; the full set is everything.
@@ -315,6 +327,16 @@ export function buildQuestions(size: Size = 'full') {
       instructions: 'How urgently does the writer need something to happen?',
       criteria: [...URGENCY_LEVELS],
     },
+    energy: {
+      type: 'score' as const,
+      instructions: 'How much energy is in the writing?',
+      criteria: [...ENERGY_LEVELS],
+    },
+    emotion: {
+      type: 'choice' as const,
+      instructions: 'What is the primary emotion behind this message?',
+      criteria: { ...EMOTIONS },
+    },
     sarcasm: {
       type: 'boolean' as const,
       instructions: 'Is the writer being sarcastic or ironic?',
@@ -322,6 +344,10 @@ export function buildQuestions(size: Size = 'full') {
     joke: {
       type: 'boolean' as const,
       instructions: 'Is the writer trying to be funny?',
+    },
+    wantsReply: {
+      type: 'boolean' as const,
+      instructions: 'Is the writer expecting a response from someone?',
     },
   };
 }
@@ -332,8 +358,11 @@ export type ReactResponse = {
   emoji: { choice: string; probabilities: Record<string, number>; confidence?: number };
   mood: { score: number; probabilities: Record<string, number> };
   urgency: { score: number; probabilities: Record<string, number> };
+  energy: { score: number; probabilities: Record<string, number> };
+  emotion: { choice: Emotion; probabilities: Record<string, number> };
   sarcasm: number;
   joke: number;
+  wantsReply: number;
   options: number;
   usage: { inputTokens: number; outputTokens: number };
   costUsd: number;

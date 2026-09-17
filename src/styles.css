@@ -100,6 +100,15 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 .rowhead { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.68rem; letter-spacing: 0.08em; color: var(--muted); }
 .mood { position: relative; height: 0.7rem; border-radius: 999px; background: linear-gradient(90deg, #38bdf8, #a1a1aa, #fbbf24); }
 .mood.urgency { background: linear-gradient(90deg, #a1a1aa, #fb923c, #ef4444); }
+.mood.energy { background: linear-gradient(90deg, #a1a1aa, #34d399, #a78bfa); }
+.bar.sky > i { background: #38bdf8; }
+.gauges .wide { grid-column: 1 / -1; }
+.emotions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; font-family: ui-monospace, monospace; font-size: 0.7rem; }
+.emotions li { display: flex; align-items: center; gap: 0.5rem; color: var(--muted); }
+.emotions li.lead { color: var(--text); font-weight: 600; }
+.emotions .k { width: 4rem; }
+.emotions .bar { height: 0.45rem; }
+.emotions .p { width: 2.2rem; text-align: right; font-variant-numeric: tabular-nums; }
 .mood > i { position: absolute; top: 50%; width: 1.2rem; height: 1.2rem; border-radius: 50%; background: var(--card); border: 2px solid var(--text); transform: translate(-50%, -50%); transition: left 300ms ease-out; }
 .moodlabels { display: flex; justify-content: space-between; font-size: 0.62rem; color: var(--muted); margin-top: 0.3rem; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--card); }

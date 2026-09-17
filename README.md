@@ -2,11 +2,12 @@
 
 **Emoji autocomplete at the speed of typing.** Live at [emoji-jev.whop.site](https://emoji-jev.whop.site).
 
-Type anything and a keyboard of up to 254 emojis lights up as you go. Every pause in typing is one call to [Jev](https://typesafe.ai), which answers five typed questions in parallel in about 100 ms of model time:
+Type anything and a keyboard of up to 254 emojis lights up as you go. Every pause in typing is one call to [Jev](https://typesafe.ai), which answers eight typed questions in parallel in about 100 ms of model time:
 
 - a **Choice** over 64, 128, or 254 emojis (switchable on the page), with a probability for every key
-- two **Scores**: mood (devastated to ecstatic) and urgency (no rush to right now)
-- two **Booleans**: is the writer being sarcastic, and are they trying to be funny
+- a **Choice** over eight primary emotions, shown as a distribution
+- three **Scores**: mood, urgency, and energy
+- three **Booleans**: sarcasm, joke, and whether the writer wants a reply
 
 Jev bills input tokens only, so a keystroke costs about $0.0002.
 

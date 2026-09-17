@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SECURITY_HEADERS } from '../guard'
-import { EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, PROMPTS_SHOWN, SIZES, URGENCY_LEVELS, emojiSet, pickPrompts, type ReactResponse, type Size } from '../emoji'
+import { EMOJI_BY_KEY, EMOTIONS, ENERGY_LEVELS, MOOD_LEVELS, PROMPTS, PROMPTS_SHOWN, SIZES, URGENCY_LEVELS, emojiSet, pickPrompts, type ReactResponse, type Size } from '../emoji'
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -199,49 +199,31 @@ function Home() {
         </div>
 
         <div className="gauges">
-          <div className="panel">
+          <Slider label="Mood" levels={MOOD_LEVELS} score={result?.mood.score} cls="mood" />
+          <Slider label="Urgency" levels={URGENCY_LEVELS} score={result?.urgency.score} cls="mood urgency" />
+          <Slider label="Energy" levels={ENERGY_LEVELS} score={result?.energy.score} cls="mood energy" />
+          <Gauge label="Wants a reply" value={result?.wantsReply} cls="sky" />
+          <Gauge label="Sarcasm" value={result?.sarcasm} cls="rose" />
+          <Gauge label="Joke" value={result?.joke} cls="amber" />
+          <div className="panel wide">
             <div className="rowhead">
-              <span>MOOD</span>
-              <span>{result ? MOOD_LEVELS[Math.round(result.mood.score)] : '—'}</span>
+              <span>PRIMARY EMOTION</span>
+              <span>{result ? result.emotion.choice : '—'}</span>
             </div>
-            <div className="mood">
-              <i style={{ left: `${result ? (result.mood.score / (MOOD_LEVELS.length - 1)) * 100 : 50}%` }} />
-            </div>
-            <div className="moodlabels">
-              <span>{MOOD_LEVELS[0]}</span>
-              <span>{MOOD_LEVELS[MOOD_LEVELS.length - 1]}</span>
-            </div>
-          </div>
-          <div className="panel">
-            <div className="rowhead">
-              <span>URGENCY</span>
-              <span>{result ? URGENCY_LEVELS[Math.round(result.urgency.score)] : '—'}</span>
-            </div>
-            <div className="mood urgency">
-              <i style={{ left: `${result ? (result.urgency.score / (URGENCY_LEVELS.length - 1)) * 100 : 0}%` }} />
-            </div>
-            <div className="moodlabels">
-              <span>{URGENCY_LEVELS[0]}</span>
-              <span>{URGENCY_LEVELS[URGENCY_LEVELS.length - 1]}</span>
-            </div>
-          </div>
-          <div className="panel">
-            <div className="rowhead">
-              <span>SARCASM</span>
-              <span>{result ? result.sarcasm.toFixed(2) : '—'}</span>
-            </div>
-            <span className="bar rose" style={{ display: 'block', height: '0.75rem' }}>
-              <i style={{ width: `${result ? result.sarcasm * 100 : 0}%` }} />
-            </span>
-          </div>
-          <div className="panel">
-            <div className="rowhead">
-              <span>JOKE</span>
-              <span>{result ? result.joke.toFixed(2) : '—'}</span>
-            </div>
-            <span className="bar amber" style={{ display: 'block', height: '0.75rem' }}>
-              <i style={{ width: `${result ? result.joke * 100 : 0}%` }} />
-            </span>
+            <ul className="emotions">
+              {(Object.keys(EMOTIONS) as (keyof typeof EMOTIONS)[])
+                .map((k) => ({ k, p: result?.emotion.probabilities[k] ?? 0 }))
+                .sort((a, b) => b.p - a.p)
+                .map(({ k, p }) => (
+                  <li key={k} className={result?.emotion.choice === k ? 'lead' : undefined}>
+                    <span className="k">{k}</span>
+                    <span className="bar">
+                      <i style={{ width: `${Math.max(p > 0 ? 2 : 0, p * 100)}%` }} />
+                    </span>
+                    <span className="p">{p.toFixed(2)}</span>
+                  </li>
+                ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -348,5 +330,38 @@ function ThemeToggle() {
         ☾
       </button>
     </span>
+  )
+}
+
+function Slider({ label, levels, score, cls }: { label: string; levels: readonly string[]; score?: number; cls: string }) {
+  const has = score != null
+  return (
+    <div className="panel">
+      <div className="rowhead">
+        <span>{label.toUpperCase()}</span>
+        <span>{has ? levels[Math.round(score)] : '—'}</span>
+      </div>
+      <div className={cls}>
+        <i style={{ left: `${has ? (score / (levels.length - 1)) * 100 : 0}%`, opacity: has ? 1 : 0.4 }} />
+      </div>
+      <div className="moodlabels">
+        <span>{levels[0]}</span>
+        <span>{levels[levels.length - 1]}</span>
+      </div>
+    </div>
+  )
+}
+
+function Gauge({ label, value, cls }: { label: string; value?: number; cls: string }) {
+  return (
+    <div className="panel">
+      <div className="rowhead">
+        <span>{label.toUpperCase()}</span>
+        <span>{value != null ? value.toFixed(2) : '—'}</span>
+      </div>
+      <span className={`bar ${cls}`} style={{ display: 'block', height: '0.75rem' }}>
+        <i style={{ width: `${value != null ? value * 100 : 0}%` }} />
+      </span>
+    </div>
   )
 }
