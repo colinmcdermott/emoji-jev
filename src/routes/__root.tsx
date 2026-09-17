@@ -9,7 +9,11 @@ export const Route = createRootRoute({
       { title: 'Emoji autocomplete at the speed of typing' },
       { name: 'description', content: 'Type anything and the emoji lights up as you go. Every pause is one TypeSafe AI Jev call: hundreds of options, three typed answers, a few hundred milliseconds.' },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icon.png' },
+      { rel: 'apple-touch-icon', href: '/icon.png' },
+    ],
   }),
   shellComponent: RootDocument,
 })
