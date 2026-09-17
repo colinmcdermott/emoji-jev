@@ -97,7 +97,14 @@ function Home() {
 
   return (
     <main>
-      <p className="eyebrow">TypeSafe AI Jev</p>
+      <div className="brandrow">
+        <span className="brand">Emoji Jev</span>
+        <span className="brandsub">TypeSafe AI Jev on Whop</span>
+        <span className="pills">
+          <span className="pill">{keys.length} emojis</span>
+          <span className="pill accent">{result?.modelId ?? 'jev-latest'}</span>
+        </span>
+      </div>
       <h1>Emoji autocomplete at the speed of typing.</h1>
 
       <div className="panel inputrow">
