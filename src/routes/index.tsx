@@ -134,6 +134,9 @@ function Home() {
       </div>
 
       <div className="chips">
+        <button className="shuffle" onClick={() => setPrompts(pickPrompts())} aria-label="Show different suggestions" title="Show different suggestions">
+          ↻
+        </button>
         {prompts.map((p) => (
           <button
             key={p}
@@ -145,9 +148,6 @@ function Home() {
             {p}
           </button>
         ))}
-        <button className="shuffle" onClick={() => setPrompts(pickPrompts())} aria-label="Show different suggestions" title="Show different suggestions">
-          ↻ shuffle
-        </button>
       </div>
 
       <div className="stats" aria-live="polite">
@@ -282,22 +282,27 @@ function Stat({ label, value, hint }: { label: string; value: string; hint: stri
   )
 }
 
-const CLONE_CMD = 'whop apps init --template app_D0f07WnZVO8v5N --app_type website'
+const SETUP_PROMPT = `Set up my own copy of the Emoji Jev app (https://emoji-jev.whop.site, source: https://github.com/colinmcdermott/emoji-jev).
+1. If the \`whop\` CLI is not installed, install it: npm install -g @whop/cli (or: curl -fsSL https://whop.com/install.sh | sh).
+2. Run \`whop login\`, then pick or create a business when prompted.
+3. Clone the published app: whop apps init --template app_D0f07WnZVO8v5N --app_type website
+4. Get a TypeSafe AI API key from https://console.typesafe.ai/settings/keys and store it: whop apps secrets set --secret TYPESAFE_AI_API_KEY=<key>. Also write TYPESAFE_AI_API_KEY=<key> to a .dev.vars file in the project for local dev.
+5. Run \`whop apps dev\` to try it locally, then \`whop apps deploy\` to put it live on <route>.whop.site.`
 
 function CloneButton() {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(CLONE_CMD)
+      await navigator.clipboard.writeText(SETUP_PROMPT)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      window.prompt('Copy this command:', CLONE_CMD)
+      window.prompt('Copy this prompt:', SETUP_PROMPT)
     }
   }
   return (
-    <button className="clone" onClick={copy} title={CLONE_CMD} aria-label="Copy the Whop CLI command to clone this app">
-      {copied ? '✓ command copied' : '⧉ clone with the Whop CLI'}
+    <button className="clone" onClick={copy} title="Copies a prompt you can paste into Claude Code, Cursor, or any AI agent to install the Whop CLI and clone this app" aria-label="Copy an AI setup prompt to clone this app">
+      {copied ? '✓ prompt copied, paste it into your AI agent' : '⧉ copy AI prompt to clone this app'}
     </button>
   )
 }
@@ -323,11 +328,16 @@ function ThemeToggle() {
   }
   return (
     <span className="seg theme" role="group" aria-label="Colour theme">
-      <button className={theme === 'light' ? 'on' : undefined} onClick={() => choose('light')} aria-pressed={theme === 'light'} title="Light">
-        ☀
+      <button className={theme === 'light' ? 'on' : undefined} onClick={() => choose('light')} aria-pressed={theme === 'light'} title="Light" aria-label="Light theme">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </svg>
       </button>
-      <button className={theme === 'dark' ? 'on' : undefined} onClick={() => choose('dark')} aria-pressed={theme === 'dark'} title="Dark">
-        ☾
+      <button className={theme === 'dark' ? 'on' : undefined} onClick={() => choose('dark')} aria-pressed={theme === 'dark'} title="Dark" aria-label="Dark theme">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+        </svg>
       </button>
     </span>
   )

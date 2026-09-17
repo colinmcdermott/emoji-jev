@@ -66,12 +66,11 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 .hero { width: 5rem; height: 5rem; display: grid; place-items: center; font-size: 3.6rem; line-height: 1; animation: pop 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2); }
 .hero.empty { color: var(--faint); }
 @keyframes pop { 0% { transform: scale(0.6); opacity: 0 } 60% { transform: scale(1.15); opacity: 1 } 100% { transform: scale(1) } }
-.chips { display: flex; flex-wrap: nowrap; gap: 0.4rem; margin-top: 0.75rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
-.chips::-webkit-scrollbar { display: none; }
-.chips button { white-space: nowrap; flex: 0 0 auto; }
+.chips { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 0.4rem; margin-top: 0.75rem; height: calc(2 * 1.75rem + 0.4rem); overflow: hidden; }
+.chips button { white-space: nowrap; height: 1.75rem; line-height: 1; }
 .chips button { background: var(--card); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 0.25rem 0.7rem; font: inherit; font-size: 0.75rem; cursor: pointer; }
 .chips button:hover { border-color: var(--muted); }
-.chips .shuffle { color: var(--muted); border-style: dashed; }
+.chips .shuffle { color: var(--muted); border-style: dashed; width: 1.75rem; padding: 0; font-size: 0.95rem; }
 
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 0.5rem; margin-top: 1rem; }
 .stat { display: flex; flex-direction: column; gap: 0.15rem; background: var(--panel); border: 1px solid var(--line); border-radius: 0.75rem; padding: 0.6rem 0.75rem; }
@@ -114,7 +113,7 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--card); }
 .seg button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 0.68rem; padding: 0.15rem 0.6rem; cursor: pointer; }
 .seg button.on { background: rgb(var(--accent)); color: var(--accent-ink); }
-.seg.theme button { padding: 0.15rem 0.5rem; font-size: 0.8rem; line-height: 1.1; }
+.seg.theme button { padding: 0.2rem 0.5rem; display: inline-flex; align-items: center; }
 .keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.25rem, 1fr)); gap: 0.4rem; }
 .keys button { aspect-ratio: 1; display: grid; place-items: center; border: 0; border-radius: 0.4rem; font-size: 1.25rem; cursor: pointer; background: rgba(var(--accent), var(--p, 0)); opacity: var(--o, 0.4); transform: scale(var(--s, 1)); transition: opacity 300ms, transform 300ms, background 300ms; padding: 0; }
 .keys button.win { outline: 2px solid rgb(var(--accent)); }

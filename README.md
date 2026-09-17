@@ -20,6 +20,8 @@ Jev bills input tokens only, so a keystroke costs about $0.0002.
 ## Run it yourself
 
 ```sh
+npm install -g @whop/cli                                             # or: curl -fsSL https://whop.com/install.sh | sh
+whop login
 whop apps init --template app_D0f07WnZVO8v5N --app_type website   # clone the published source
 cd emoji-jev
 whop apps secrets set --secret TYPESAFE_AI_API_KEY=...             # key from https://console.typesafe.ai/settings/keys
