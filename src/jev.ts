@@ -24,6 +24,9 @@ export async function react(text: string, signal?: AbortSignal): Promise<ReactRe
   const r = await evaluate({ model, state: { message: text.slice(0, 2000) }, questions: QUESTIONS, abortSignal: signal })
   const serverMs = performance.now() - started
   const inputTokens = r.usage?.inputTokens ?? 0
+  // TypeSafe reports its own processing time; the rest of serverMs is network between this Worker and their API.
+  const upstream = Number(r.response?.headers?.['x-envoy-upstream-service-time'])
+  const modelMs = Number.isFinite(upstream) && upstream > 0 ? upstream : undefined
   const confidence = (r.providerMetadata?.typesafe?.confidence as Record<string, number> | undefined)?.emoji
   return {
     via: 'typesafe',
@@ -38,6 +41,6 @@ export async function react(text: string, signal?: AbortSignal): Promise<ReactRe
     options: EMOJIS.length,
     usage: { inputTokens, outputTokens: r.usage?.outputTokens ?? 0 },
     costUsd: inputTokens * USD_PER_INPUT_TOKEN,
-    timing: { serverMs },
+    timing: { serverMs, modelMs },
   }
 }

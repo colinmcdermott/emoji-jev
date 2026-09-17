@@ -41,7 +41,7 @@ function Home() {
       setResult(r)
       setStatus('ok')
       setError(null)
-      setSession((s) => ({ calls: s.calls + 1, cost: s.cost + r.costUsd, ms: [...s.ms.slice(-49), r.timing.serverMs] }))
+      setSession((s) => ({ calls: s.calls + 1, cost: s.cost + r.costUsd, ms: [...s.ms.slice(-49), r.timing.modelMs ?? r.timing.serverMs] }))
     } catch (e) {
       if (id !== seq.current) return
       setStatus('error')
@@ -127,15 +127,23 @@ function Home() {
       </div>
 
       <div className="stats" aria-live="polite">
-        <Stat label="Jev time" value={result ? `${Math.round(result.timing.serverMs)} ms` : '—'} hint="model call, measured on the server" />
-        <Stat label="Round trip" value={clientMs != null && result ? `${Math.round(clientMs)} ms` : '—'} hint="from your keystroke to the answer" />
+        <Stat
+          label="Model time"
+          value={result ? `${Math.round(result.timing.modelMs ?? result.timing.serverMs)} ms` : '—'}
+          hint="Jev's own processing time, as reported by TypeSafe"
+        />
+        <Stat
+          label="Round trip"
+          value={clientMs != null && result ? `${Math.round(clientMs)} ms` : '—'}
+          hint="keystroke to answer, including the network hops to Oregon and back"
+        />
         <Stat label="Input tokens" value={result ? result.usage.inputTokens.toLocaleString() : '—'} hint={`your text plus the ${EMOJIS.length} options and their descriptions; output tokens are free`} />
         <Stat label="Cost" value={result ? `$${result.costUsd.toFixed(5)}` : '—'} hint="this call, at $0.042 per million" />
         <Stat label="Options" value={EMOJIS.length.toLocaleString()} hint="emojis chosen between, plus mood and sarcasm" />
         <Stat
           label="Session"
           value={medianMs != null ? `${Math.round(medianMs)} ms` : '—'}
-          hint={session.calls ? `median of ${session.calls} calls · $${session.cost.toFixed(4)} total` : 'median latency'}
+          hint={session.calls ? `median model time over ${session.calls} calls · $${session.cost.toFixed(4)} total` : 'median model time'}
         />
       </div>
       <p className={`status ${status}`}>

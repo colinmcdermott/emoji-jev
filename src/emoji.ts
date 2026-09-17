@@ -298,7 +298,7 @@ export type ReactResponse = {
   options: number;
   usage: { inputTokens: number; outputTokens: number };
   costUsd: number;
-  timing: { serverMs: number; providerMs?: number };
+  timing: { serverMs: number; providerMs?: number; modelMs?: number };
 };
 
 export const PROMPTS = [
