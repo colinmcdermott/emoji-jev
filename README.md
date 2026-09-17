@@ -1,0 +1,37 @@
+# Emoji Jev
+
+**Emoji autocomplete at the speed of typing.** Live at [emoji-jev.whop.site](https://emoji-jev.whop.site).
+
+Type anything and a keyboard of 254 emojis lights up as you go. Every pause in typing is one call to [Jev](https://typesafe.ai), TypeSafe AI's System One model, which answers three typed questions in parallel in a few hundred milliseconds:
+
+- a 254-way **Choice**: which emoji, with a probability for every key
+- a 5-level **Score**: mood, from devastated to ecstatic
+- a **Boolean**: is the writer being sarcastic
+
+Jev bills input tokens only, so a keystroke costs about $0.0002.
+
+## Stack
+
+- [TanStack Start](https://tanstack.com/start) on Cloudflare Workers, hosted by [Whop](https://whop.com) (`*.whop.site`)
+- [AI SDK](https://ai-sdk.dev) `experimental_evaluate` with the [`@ai-sdk/typesafe-ai`](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) provider
+- No UI framework, no Tailwind: one small stylesheet and the system font
+
+## Run it yourself
+
+```sh
+whop apps init --template app_D0f07WnZVO8v5N --app_type website   # clone the published source
+cd emoji-jev
+whop apps secrets set --secret TYPESAFE_AI_API_KEY=...             # key from https://console.typesafe.ai/settings/keys
+echo "TYPESAFE_AI_API_KEY=..." > .dev.vars                          # same key for local dev (gitignored)
+whop apps dev
+whop apps deploy
+```
+
+Or from this repo: `pnpm install`, add `.dev.vars`, `pnpm dev`.
+
+## Files
+
+- `src/emoji.ts` the emoji vocabulary and the three questions
+- `src/jev.ts` the Jev call, reads the key from the Worker env binding
+- `src/routes/api/react.ts` `POST /api/react`
+- `src/routes/index.tsx` the page
