@@ -1,6 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
-import iconUrl from '../icon.png?url'
+import iconUrl from '../icon.png?no-inline'
 
 export const Route = createRootRoute({
   head: () => ({
