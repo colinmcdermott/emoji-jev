@@ -349,4 +349,48 @@ export const PROMPTS = [
   'shipped the feature and prod is on fire',
   'ran my first 10k this morning',
   'my landlord just raised the rent by 20%',
+  'can someone PLEASE fix the login page, customers are locked out',
+  'brunch was avocado toast and three mimosas',
+  'packing for the ski trip and I cannot find my passport',
+  'finally paid off the car',
+  'the wifi has been down all day and I have a deadline',
+  'she said yes!!!',
+  'dog ate my AirPods',
+  'wow, love being cc’d on 40 emails about the office fridge',
+  'first day at the new job tomorrow, bit nervous',
+  'three hours of sleep and a 9am pitch',
+  'my sourdough finally rose',
+  'tell me why the tax return took six hours',
+  "grandad's 90th birthday this weekend",
+  'lost my wallet on the train',
+  'the kids are asleep and the house is silent',
+  'won the pub quiz by one point',
+  'snowed in, no work, hot chocolate',
+  'my code passed all the tests on the first try',
+  'someone parked across my driveway again',
+  'listening to the new album on repeat',
+  'nailed the interview, waiting to hear back',
+  'the pizza place got my order wrong for the third time',
+  "it's 30 degrees and the office aircon is broken",
+  'just booked two weeks in Portugal',
+  'sure, I would LOVE to work this weekend',
+  'my team lost in the last minute',
+  'the doctor says it is just a cold',
+  'found twenty quid in an old coat',
+  'car failed its MOT, again',
+  'planted tomatoes, hoping for the best',
+  'no notes. perfect gig.',
+  'is it too early for a glass of wine',
 ];
+
+export const PROMPTS_SHOWN = 8;
+
+/** A random subset of the prompt pool, in random order. */
+export function pickPrompts(n = PROMPTS_SHOWN): string[] {
+  const pool = [...PROMPTS];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    ;[pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, n);
+}

@@ -56,6 +56,7 @@ h1 { font-size: 1.4rem; margin: 1rem 0 0; letter-spacing: -0.015em; font-weight:
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
 .chips button { background: var(--card); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 0.25rem 0.7rem; font: inherit; font-size: 0.75rem; cursor: pointer; }
 .chips button:hover { border-color: var(--muted); }
+.chips .shuffle { color: var(--muted); border-style: dashed; }
 
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: 0.5rem; margin-top: 1rem; }
 .stat { display: flex; flex-direction: column; gap: 0.15rem; background: var(--panel); border: 1px solid var(--line); border-radius: 0.75rem; padding: 0.6rem 0.75rem; }

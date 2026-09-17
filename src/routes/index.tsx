@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, SIZES, URGENCY_LEVELS, emojiSet, type ReactResponse, type Size } from '../emoji'
+import { EMOJI_BY_KEY, MOOD_LEVELS, PROMPTS, PROMPTS_SHOWN, SIZES, URGENCY_LEVELS, emojiSet, pickPrompts, type ReactResponse, type Size } from '../emoji'
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -17,6 +17,8 @@ const DEBOUNCE_MS = 220
 function Home() {
   const [text, setText] = useState('')
   const [size, setSize] = useState<Size>('full')
+  // Deterministic on the server so hydration matches; shuffled once mounted.
+  const [prompts, setPrompts] = useState<string[]>(() => PROMPTS.slice(0, PROMPTS_SHOWN))
   const [result, setResult] = useState<ReactResponse | null>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -71,6 +73,7 @@ function Home() {
   }, [])
 
   useEffect(() => {
+    setPrompts(pickPrompts())
     inputRef.current?.focus()
     warm()
     const t = setInterval(warm, 25_000)
@@ -129,7 +132,7 @@ function Home() {
       </div>
 
       <div className="chips">
-        {PROMPTS.map((p) => (
+        {prompts.map((p) => (
           <button
             key={p}
             onClick={() => {
@@ -140,6 +143,9 @@ function Home() {
             {p}
           </button>
         ))}
+        <button className="shuffle" onClick={() => setPrompts(pickPrompts())} aria-label="Show different suggestions" title="Show different suggestions">
+          ↻ shuffle
+        </button>
       </div>
 
       <div className="stats" aria-live="polite">
