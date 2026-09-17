@@ -13,6 +13,12 @@ export const Route = createRootRoute({
       { title: 'Emoji autocomplete at the speed of typing' },
       { name: 'description', content: 'Type anything and the emoji lights up as you go. Every pause is one TypeSafe AI Jev call: hundreds of options, three typed answers, a few hundred milliseconds.' },
     ],
+    scripts: [
+      {
+        children:
+          "try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}",
+      },
+    ],
     links: [
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', type: 'image/png', sizes: '192x192', href: iconUrl },

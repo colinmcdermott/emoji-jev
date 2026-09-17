@@ -3,8 +3,5 @@
   "name": "emoji-jev",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
-  "ratelimits": [
-    { "name": "RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 40, "period": 10 } }
-  ]
+  "main": "@tanstack/react-start/server-entry"
 }

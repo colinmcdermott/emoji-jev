@@ -30,11 +30,6 @@ async function limiter() {
   }
 }
 
-/** Which limiter is active; exposed for diagnostics. */
-export async function limiterKind(): Promise<'binding' | 'memory'> {
-  return (await limiter()) ? 'binding' : 'memory'
-}
-
 /** Returns a Response to send immediately, or null if the request may proceed. */
 export async function guard(request: Request): Promise<Response | null> {
   const url = new URL(request.url)

@@ -14,7 +14,7 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 40px rgba(0, 0, 0, 0.06);
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
     --page: #08080c;
     --card: #101016;
@@ -29,6 +29,21 @@
     --pill-ink: #c4b5fd;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 40px rgba(0, 0, 0, 0.45);
   }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #08080c;
+  --card: #101016;
+  --panel: #17171e;
+  --line: #26262f;
+  --text: #ececf1;
+  --muted: #8b8b96;
+  --faint: #33333c;
+  --accent: 167, 139, 250;
+  --accent-ink: #0b0b10;
+  --pill: #2a2440;
+  --pill-ink: #c4b5fd;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 40px rgba(0, 0, 0, 0.45);
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; background: var(--page); color: var(--text); }
@@ -51,7 +66,9 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 .hero { width: 5rem; height: 5rem; display: grid; place-items: center; font-size: 3.6rem; line-height: 1; animation: pop 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2); }
 .hero.empty { color: var(--faint); }
 @keyframes pop { 0% { transform: scale(0.6); opacity: 0 } 60% { transform: scale(1.15); opacity: 1 } 100% { transform: scale(1) } }
-.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+.chips { display: flex; flex-wrap: nowrap; gap: 0.4rem; margin-top: 0.75rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { white-space: nowrap; flex: 0 0 auto; }
 .chips button { background: var(--card); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 0.25rem 0.7rem; font: inherit; font-size: 0.75rem; cursor: pointer; }
 .chips button:hover { border-color: var(--muted); }
 .chips .shuffle { color: var(--muted); border-style: dashed; }
@@ -88,12 +105,14 @@ main { max-width: 64rem; margin: 0 auto; background: var(--card); border: 1px so
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--card); }
 .seg button { background: none; border: 0; color: var(--muted); font: inherit; font-size: 0.68rem; padding: 0.15rem 0.6rem; cursor: pointer; }
 .seg button.on { background: rgb(var(--accent)); color: var(--accent-ink); }
+.seg.theme button { padding: 0.15rem 0.5rem; font-size: 0.8rem; line-height: 1.1; }
 .keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.25rem, 1fr)); gap: 0.4rem; }
 .keys button { aspect-ratio: 1; display: grid; place-items: center; border: 0; border-radius: 0.4rem; font-size: 1.25rem; cursor: pointer; background: rgba(var(--accent), var(--p, 0)); opacity: var(--o, 0.4); transform: scale(var(--s, 1)); transition: opacity 300ms, transform 300ms, background 300ms; padding: 0; }
 .keys button.win { outline: 2px solid rgb(var(--accent)); }
 .muted { color: var(--muted); font-size: 0.85rem; margin: 0; }
 
-.foot { margin-top: 1.5rem; font-size: 0.78rem; color: var(--muted); }
+.foot { margin-top: 1.5rem; font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.foot p { flex: 1 1 20rem; }
 .foot p { margin: 0.25rem 0; }
 .foot a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
 .clone { background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 0.3rem 0.8rem; font: inherit; font-size: 0.75rem; cursor: pointer; }

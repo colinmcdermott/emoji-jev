@@ -108,6 +108,7 @@ function Home() {
         <span className="pills">
           <span className="pill">{keys.length} emojis</span>
           <span className="pill accent">{result?.modelId ?? 'jev-latest'}</span>
+          <ThemeToggle />
         </span>
       </div>
 
@@ -279,13 +280,12 @@ function Home() {
       <footer className="foot">
         <p>
           Decisions by <a href="https://typesafe.ai" target="_blank" rel="noopener noreferrer">Jev</a> via the{' '}
-          <a href="https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai" target="_blank" rel="noopener noreferrer">AI SDK</a>. Built and deployed with the{' '}
+          <a href="https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai" target="_blank" rel="noopener noreferrer">AI SDK</a>. Built by{' '}
+          <a href="https://x.com/ColinMcDermott" target="_blank" rel="noopener noreferrer">@ColinMcDermott</a> and deployed with the{' '}
           <a href="https://docs.whop.com/cli/overview" target="_blank" rel="noopener noreferrer">Whop CLI</a>.{' '}
           <a href="https://github.com/colinmcdermott/emoji-jev" target="_blank" rel="noopener noreferrer">View the code</a>.
         </p>
-        <p>
-          <CloneButton />
-        </p>
+        <CloneButton />
       </footer>
     </main>
   )
@@ -317,5 +317,36 @@ function CloneButton() {
     <button className="clone" onClick={copy} title={CLONE_CMD} aria-label="Copy the Whop CLI command to clone this app">
       {copied ? '✓ command copied' : '⧉ clone with the Whop CLI'}
     </button>
+  )
+}
+
+type Theme = 'light' | 'dark'
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState<Theme | null>(null)
+  useEffect(() => {
+    let saved: string | null = null
+    try {
+      saved = localStorage.getItem('theme')
+    } catch {}
+    if (saved === 'light' || saved === 'dark') setTheme(saved)
+    else setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+  }, [])
+  const choose = (t: Theme) => {
+    setTheme(t)
+    document.documentElement.dataset.theme = t
+    try {
+      localStorage.setItem('theme', t)
+    } catch {}
+  }
+  return (
+    <span className="seg theme" role="group" aria-label="Colour theme">
+      <button className={theme === 'light' ? 'on' : undefined} onClick={() => choose('light')} aria-pressed={theme === 'light'} title="Light">
+        ☀
+      </button>
+      <button className={theme === 'dark' ? 'on' : undefined} onClick={() => choose('dark')} aria-pressed={theme === 'dark'} title="Dark">
+        ☾
+      </button>
+    </span>
   )
 }
